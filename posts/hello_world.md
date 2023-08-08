@@ -1,7 +1,7 @@
 
-@description
+@D
 This blog delves into the fascinating world of honeybees. Discover how these tiny insects communicate, their role in our ecosystem, and some of the threats they face today.
-@end description
+@Dend
 
 # The Marvelous World of Honeybees
 

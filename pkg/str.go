@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"bytes"
+	"fmt"
 	"strings"
 )
 
@@ -20,6 +21,17 @@ func First(s string, ch rune) bool {
 	}
 	r := bytes.Runes([]byte{s[0]})[0]
 	return r == ch
+}
+
+func StartsWith(s string, start string) bool {
+  if len(start) > len(s) {
+    return false
+  }
+  cond := s[0:len(start)] == start
+  if cond {
+    fmt.Println(s)
+  }
+  return cond
 }
 
 func CountPrefixReturnRest(s string, ch rune) (int, string) {

@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/gomarkdown/markdown"
@@ -98,7 +99,7 @@ func (posts Posts) FirstWhere(fn func(Post) bool) (Post, error) {
 func Parse(post string, body string) (ParsedPost, error) {
 	toc := ExtractToc(body)
 
-	desc, err, rest := ExtractDescription(body)
+	desc, rest, err := ExtractDescription(body)
 	if err != nil {
 		return ParsedPost{}, err
 	}
@@ -119,32 +120,24 @@ func Parse(post string, body string) (ParsedPost, error) {
 	}, nil
 }
 
-func ExtractDescription(s string) (string, error, string) {
+func ExtractDescription(s string) (string, string, error) {
 	lines := strings.Split(s, "\n")
-	bufDesc := []string{}
-	var start int
-	var end int
-	inDescription := false
-	for i, line := range lines {
-		if First(line, '@') {
-			rest := line[1:]
-			if rest == "description" {
-				inDescription = true
-				start = i
-				continue
-			} else if rest == "end description" {
-				end = i
-				bufRest := []string{}
-				bufRest = append(bufRest, lines[:start]...)
-				bufRest = append(bufRest, lines[end + 1:]...)
-				return strings.Join(bufDesc, ""), nil, strings.Join(bufRest, "\n")
-			}
-		}
-		if inDescription {
-			bufDesc = append(bufDesc, line)
-		}
-	}
-	return "", errors.New("Could not find description."), ""
+  
+  parts := splitNWhere(lines, 2, func(s string) bool {
+    begin := StartsWith(s, "@D") 
+    if begin {
+      return true
+    }
+    return StartsWith(s, "@Dend")
+  })
+
+  fmt.Println(len(parts))
+  if len(parts) < 2 {
+    return "", "", errors.New("Description not found.")
+  }
+
+  description, rest := parts[1], parts[2]
+  return strings.Join(description, "\n"), strings.Join(rest, "\n"), nil
 }
 
 func ExtractContent(s string) Content {
@@ -175,6 +168,29 @@ func splitWhere(arr []string, fn func(string) bool) [][]string {
 		curr = append(curr, itm)
 	}
 	return parts
+}
+
+func splitNWhere(arr []string, n int, fn func(string)bool) [][]string {
+	parts := [][]string{}
+	curr := []string{}
+  nInternal := 0
+	for i, itm := range arr {
+		if fn(itm) {
+			parts = append(parts, curr)
+      nInternal += 1
+			curr = []string{}
+      if nInternal == n {
+        if i + 1 < len(arr) {
+          parts = append(parts, arr[i + 1:])
+        }
+        return parts
+      }
+			continue
+		}
+		curr = append(curr, itm)
+	}
+	return parts
+
 }
 
 func ExtractToc(s string) Toc {
