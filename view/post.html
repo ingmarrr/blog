@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Molengo&display=swap" rel="stylesheet">
+  <link rel="sortcut icon" type="image/png" href="../favicon.ico">
+  <script src="https://unpkg.com/htmx.org@1.9.4"
+    integrity="sha384-zUfuhFKKZCbHTY6aRR46gxiqszMk5tcHjsVFxnUo8VMus4kHGVdIYVbOYYNlKmHV"
+    crossorigin="anonymous"></script>
+  <title>ingmarfalk</title>
+</head>
+
+<body id="container" class="bg-gray-200 font-mono">
+
+  <div class="max-w-2xl mx-auto px-4 py-5">
+    <h1 class="text-3xl font-semibold mb-5">{{ .Name }}</h1>
+    <div class="space-y-6">
+      <h1>Table of Contents</h1>
+      <ul>
+        {{range .Toc }}
+        <li><a href="#{{.ID}}">{{.Body}}</a></li>
+        {{end}}
+      </ul>
+
+      <article>
+        <h2>{{.Name}}</h2>
+        <p>{{.Description}}</p>
+
+        {{range .Content}}
+        <section id="{{.ID}}">
+          <h4 class="font-bold mt-4">{{.Title}}</h4>
+          <p class="tracking-wide font-molengo">{{.Content}}</p>
+        </section>
+        {{end}}
+      </article>
+    </div>
+  </div>
+
+</body>
+
+</html>
